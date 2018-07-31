@@ -486,11 +486,10 @@ protected:
         _final_pos[0]=next_pos[0];
         _final_pos[1]=next_pos[1];
 
-        _goal_pos[0] = 25.0*sin(ANGLE*M_PI/180.0);
-        _goal_pos[1] = 25.0*cos(ANGLE*M_PI/180.0);
+        std::vector <float> _goal_pos; _goal_pos.resize(2); _goal_pos[0] = 25.0*sin(ANGLE*M_PI/180.0); _goal_pos[1] = 25.0*cos(ANGLE*M_PI/180.0); // a very far out goal (e.g. at 400 m) would not penalize the variant turning phenotypes enough
 
         //_covered_distance = round(_final_pos[1]*100) / 100.0f; // taking only the y-component of the distance travelled
-        _covered_distance = round(sqrt( (_final_pos[0]*_final_pos[0]) + (_final_pos[1]*_final_pos[1]));
+        _covered_distance = round(sqrt( (_final_pos[0]*_final_pos[0]) + (_final_pos[1]*_final_pos[1])));
 
         //_direction=atan2(-next_pos[0],next_pos[1])*180/M_PI;
         _direction=atan2(-1*(_goal_pos[0]*next_pos[1] - _goal_pos[1]*next_pos[0]),_goal_pos[0]*next_pos[0] + _goal_pos[1]*next_pos[1])*180/M_PI;
