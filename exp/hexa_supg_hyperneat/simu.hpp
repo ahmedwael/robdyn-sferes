@@ -22,21 +22,26 @@
 #include <modules/nn2/trait.hpp>
 #include "af_cppn.hpp"
 
-#ifdef OFBV36
- #define ORIENTFB_ANGLE_SENSITIVITY 36
+#ifdef OFBV30
+ #define ORIENTFB_ANGLE_SENSITIVITY 30.0
 #endif
-#ifdef OFBV24
- #define ORIENTFB_ANGLE_SENSITIVITY 24
-#endif
-#ifdef OFBV18
- #define ORIENTFB_ANGLE_SENSITIVITY 18
-#endif
-#ifdef OFBV10
- #define ORIENTFB_ANGLE_SENSITIVITY 10
+#ifdef OFBV45
+ #define ORIENTFB_ANGLE_SENSITIVITY 45.0
 #endif
 #ifndef ORIENTFB_ANGLE_SENSITIVITY
-#define ORIENTFB_ANGLE_SENSITIVITY 180
+#define ORIENTFB_ANGLE_SENSITIVITY 180.0
 #endif
+
+#ifdef ANGLED_30
+ #define ANGLE 30.0
+#else
+ #ifdef ANGLED_60
+  #define ANGLE 60.0
+ #else
+  #define ANGLE 0.0
+ #endif
+#endif
+
 template<typename NN> class Simu
 {
 public:
@@ -481,10 +486,14 @@ protected:
         _final_pos[0]=next_pos[0];
         _final_pos[1]=next_pos[1];
 
+        _goal_pos[0] = 25.0*sin(ANGLE*M_PI/180.0);
+        _goal_pos[1] = 25.0*cos(ANGLE*M_PI/180.0);
 
-        _covered_distance = round(_final_pos[1]*100) / 100.0f; // taking only the y-component of the distance travelled
+        //_covered_distance = round(_final_pos[1]*100) / 100.0f; // taking only the y-component of the distance travelled
+        _covered_distance = round(sqrt( (_final_pos[0]*_final_pos[0]) + (_final_pos[1]*_final_pos[1]));
 
-        _direction=atan2(-next_pos[0],next_pos[1])*180/M_PI;
+        //_direction=atan2(-next_pos[0],next_pos[1])*180/M_PI;
+        _direction=atan2(-1*(_goal_pos[0]*next_pos[1] - _goal_pos[1]*next_pos[0]),_goal_pos[0]*next_pos[0] + _goal_pos[1]*next_pos[1])*180/M_PI;
         rot=rob->rot();
         _arrival_angle= atan2( cos(rot[2])* sin(rot[1])* sin(rot[0])
                 + sin(rot[2])* cos(rot[0]), cos(rot[2])* cos(rot[1]))*180/M_PI;
@@ -587,6 +596,7 @@ template<typename NN> float Simu<NN> :: timer(size_t leg, size_t servo, bool pre
 template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
 {
     size_t tmp_leg = 0;
+    float angle_rad = ANGLE*M_PI/180.0f;
     for(size_t funclastlegsegment = 3; funclastlegsegment < rob->bodies().size(); funclastlegsegment+=3)
     {
         for (int j=0;j<_brokenLegs.size();j++)
@@ -716,7 +726,7 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
 #ifndef ORIENTFB
             std::vector<float> r = _ctrlrob.query(boost::make_tuple(x, y, timer_output));
 #else
-            float custom_orient = (180/ORIENTFB_ANGLE_SENSITIVITY)*rob->rot()[2]/M_PI;
+            float custom_orient = (180.0f/ORIENTFB_ANGLE_SENSITIVITY)*(rob->rot()[2]-angle_rad)/M_PI;
             if (custom_orient > 1.0)
               custom_orient = 1.0;
             if (custom_orient < -1.0)
@@ -754,7 +764,7 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
 #ifndef ORIENTFB
             std::vector<float> r = _ctrlrob.query(boost::make_tuple(x, y, timer_output));
 #else
-            float custom_orient = (180/ORIENTFB_ANGLE_SENSITIVITY)*rob->rot()[2]/M_PI;
+            float custom_orient = (180.0f/ORIENTFB_ANGLE_SENSITIVITY)*(rob->rot()[2]-angle_rad)/M_PI;
             if (custom_orient > 1.0)
               custom_orient = 1.0;
             if (custom_orient < -1.0)
