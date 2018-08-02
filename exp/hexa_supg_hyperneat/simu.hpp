@@ -47,7 +47,7 @@ template<typename NN> class Simu
 public:
     static constexpr float step = 0.015; float end_time;
     typedef boost::shared_ptr<robot::Hexapod> robot_t;
-
+/
 
     Simu(NN& ctrl, const robot_t& robot, std::vector<int> brokenLegs, float duration, float floorangle) :
         _brokenLegs(brokenLegs),
