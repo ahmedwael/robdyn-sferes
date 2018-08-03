@@ -51,6 +51,11 @@
 #ifndef ORIENTFB_ANGLE_SENSITIVITY
 #define ORIENTFB_ANGLE_SENSITIVITY 180.0
 #endif
+#ifndef SHUTOFF
+  #define SHUTOFF_VALUE 1.0
+#else
+  #define SHUTOFF_VALUE 0.0
+#endif
 template<typename NN> class Simu
 {
 public:
@@ -733,7 +738,7 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
 #ifndef ORIENTFB
             std::vector<float> r = _ctrlrob.query(boost::make_tuple(x, y, timer_output));
 #else
-            float custom_orient = (180/ORIENTFB_ANGLE_SENSITIVITY)*rob->rot()[2]/M_PI;
+            float custom_orient = SHUTOFF_VALUE*(180/ORIENTFB_ANGLE_SENSITIVITY)*rob->rot()[2]/M_PI;
             if (custom_orient > 1.0)
               custom_orient = 1.0;
             if (custom_orient < -1.0)
@@ -771,7 +776,7 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
 #ifndef ORIENTFB
             std::vector<float> r = _ctrlrob.query(boost::make_tuple(x, y, timer_output));
 #else
-            float custom_orient = (180/ORIENTFB_ANGLE_SENSITIVITY)*rob->rot()[2]/M_PI;
+            float custom_orient = SHUTOFF_VALUE*(180/ORIENTFB_ANGLE_SENSITIVITY)*rob->rot()[2]/M_PI;
             if (custom_orient > 1.0)
               custom_orient = 1.0;
             if (custom_orient < -1.0)
