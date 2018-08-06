@@ -51,11 +51,6 @@
 #ifndef ORIENTFB_ANGLE_SENSITIVITY
 #define ORIENTFB_ANGLE_SENSITIVITY 180.0
 #endif
-#ifndef SHUTOFF
-  #define SHUTOFF_VALUE 1.0
-#else
-  #define SHUTOFF_VALUE 0.0
-#endif
 #ifdef BIAS_30
  #define BIAS 30.0
 #else
@@ -623,6 +618,8 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
 {
     size_t tmp_leg = 0;
     float bias_rad = BIAS*M_PI/180.0f;
+    int bias_active = 0;
+    float shutoff_inactive = 1.0f;
     bool force_applied = false;
     for(size_t funclastlegsegment = 3; funclastlegsegment < rob->bodies().size(); funclastlegsegment+=3)
     {
@@ -732,6 +729,12 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
       rob->apply_force_com(-15.0, 0.0, 0.0);
     }
 #endif
+    if (t>=5.0){
+      bias_active = 1;
+#ifdef SHUTOFF
+      shutoff_inactive = 0.0f;
+#endif
+    }
 #ifdef DETAIL_LOGS
     static std::ofstream ofs(std::string("output_cpnn.dat").c_str());
     ofs << t << " ";
@@ -757,7 +760,7 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
 #ifndef ORIENTFB
             std::vector<float> r = _ctrlrob.query(boost::make_tuple(x, y, timer_output));
 #else
-            float custom_orient = SHUTOFF_VALUE*(180.0f/ORIENTFB_ANGLE_SENSITIVITY)*(rob->rot()[2]-bias_rad)/M_PI;
+            float custom_orient = shutoff_inactive*(180.0f/ORIENTFB_ANGLE_SENSITIVITY)*(rob->rot()[2]-(bias_rad*bias_active))/M_PI;
             if (custom_orient > 1.0)
               custom_orient = 1.0;
             if (custom_orient < -1.0)
@@ -795,7 +798,7 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
 #ifndef ORIENTFB
             std::vector<float> r = _ctrlrob.query(boost::make_tuple(x, y, timer_output));
 #else
-            float custom_orient = SHUTOFF_VALUE*(180.0f/ORIENTFB_ANGLE_SENSITIVITY)*(rob->rot()[2]-bias_rad)/M_PI;
+            float custom_orient = shutoff_inactive*(180.0f/ORIENTFB_ANGLE_SENSITIVITY)*(rob->rot()[2]-(bias_rad*bias_active))/M_PI;
             if (custom_orient > 1.0)
               custom_orient = 1.0;
             if (custom_orient < -1.0)
