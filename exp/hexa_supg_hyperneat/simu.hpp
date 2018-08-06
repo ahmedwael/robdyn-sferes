@@ -56,6 +56,15 @@
 #else
   #define SHUTOFF_VALUE 0.0
 #endif
+#ifdef BIAS_30
+ #define BIAS 30.0
+#else
+ #ifdef BIAS_60
+  #define BIAS 60.0
+ #else
+  #define BIAS 0.0
+ #endif
+#endif
 template<typename NN> class Simu
 {
 public:
@@ -104,7 +113,11 @@ public:
 
         try
         {
+#ifdef LONG
+            duration = 15.0;
+#else
             duration = 5.0;
+#endif
             _make_robot_init(duration);
         }
         catch (int e)
@@ -609,6 +622,8 @@ template<typename NN> float Simu<NN> :: timer(size_t leg, size_t servo, bool pre
 template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
 {
     size_t tmp_leg = 0;
+    float bias_rad = BIAS*M_PI/180.0f;
+    bool force_applied = false;
     for(size_t funclastlegsegment = 3; funclastlegsegment < rob->bodies().size(); funclastlegsegment+=3)
     {
         for (int j=0;j<_brokenLegs.size();j++)
@@ -712,7 +727,11 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
             assert(_offset_time[leg][0] == _offset_time[leg][1]);
         }
     }
-
+#ifdef FORCED
+    if (t>=5.0 && t<=5.2){
+      rob->apply_force_com(-15.0, 0.0, 0.0);
+    }
+#endif
 #ifdef DETAIL_LOGS
     static std::ofstream ofs(std::string("output_cpnn.dat").c_str());
     ofs << t << " ";
@@ -738,7 +757,7 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
 #ifndef ORIENTFB
             std::vector<float> r = _ctrlrob.query(boost::make_tuple(x, y, timer_output));
 #else
-            float custom_orient = SHUTOFF_VALUE*(180/ORIENTFB_ANGLE_SENSITIVITY)*rob->rot()[2]/M_PI;
+            float custom_orient = SHUTOFF_VALUE*(180.0f/ORIENTFB_ANGLE_SENSITIVITY)*(rob->rot()[2]-bias_rad)/M_PI;
             if (custom_orient > 1.0)
               custom_orient = 1.0;
             if (custom_orient < -1.0)
@@ -776,7 +795,7 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
 #ifndef ORIENTFB
             std::vector<float> r = _ctrlrob.query(boost::make_tuple(x, y, timer_output));
 #else
-            float custom_orient = SHUTOFF_VALUE*(180/ORIENTFB_ANGLE_SENSITIVITY)*rob->rot()[2]/M_PI;
+            float custom_orient = SHUTOFF_VALUE*(180.0f/ORIENTFB_ANGLE_SENSITIVITY)*(rob->rot()[2]-bias_rad)/M_PI;
             if (custom_orient > 1.0)
               custom_orient = 1.0;
             if (custom_orient < -1.0)
