@@ -27,26 +27,13 @@
 #include <sferes/run.hpp>
 #include <sferes/misc.hpp>
 
-#ifdef OFBV90
- #define ORIENTFB_ANGLE_SENSITIVITY 90.0
-#endif
-#ifdef OFBV70
- #define ORIENTFB_ANGLE_SENSITIVITY 70.0
-#endif
-#ifdef OFBV50
- #define ORIENTFB_ANGLE_SENSITIVITY 50.0
-#endif
+#include <random>
+
 #ifdef OFBV36
  #define ORIENTFB_ANGLE_SENSITIVITY 36.0
 #endif
-#ifdef OFBV24
- #define ORIENTFB_ANGLE_SENSITIVITY 24.0
-#endif
 #ifdef OFBV18
  #define ORIENTFB_ANGLE_SENSITIVITY 18.0
-#endif
-#ifdef OFBV10
- #define ORIENTFB_ANGLE_SENSITIVITY 10.0
 #endif
 #ifndef ORIENTFB_ANGLE_SENSITIVITY
 #define ORIENTFB_ANGLE_SENSITIVITY 180.0
@@ -99,7 +86,15 @@ public:
 
         try
         {
-            duration = 5.0;
+          #ifdef LONG
+                      duration = 15.0;
+          #else
+            #ifdef TORQUETEST
+                      duration = 2.0;
+            #else
+                      duration = 5.0;
+            #endif
+          #endif
             _make_robot_init(duration);
         }
         catch (int e)
@@ -266,7 +261,7 @@ public:
     }
 
     float timer(size_t leg, size_t servo, bool prev_contact, bool contact);
-    void moveRobot(robot_t rob, float t);
+    void moveRobot(robot_t rob, float t, double applied_torque, double torque_time);
     std::vector<std::vector<float> > angles_forfft;
     float servo_frequencies_max;
 
@@ -352,8 +347,18 @@ protected:
         robot_t rob = this->robot();
         Eigen::Vector3d rot=rob->rot();
         _arrival_angle= atan2( cos(rot[2])* sin(rot[1])* sin(rot[0]) + sin(rot[2])* cos(rot[0]), cos(rot[2])* cos(rot[1]))*180/M_PI;
-
-        moveRobot(rob,0);
+        std::random_device rd{};
+        std::mt19937 generator{rd()};
+        std::normal_distribution<double> norm_dist(7.0,1.5);
+        std::uniform_real_distribution<double> time_uni_dist(2.0, 3.0);
+        std::uniform_int_distribution<int> sign_uni_dist(0, 1);
+        double applied_torque = norm_dist(generator);
+        double torque_time = time_uni_dist(generator);
+        int torque_sign = sign_uni_dist(generator);
+        if (!torque_sign)
+          torque_sign = -1;
+        applied_torque = torque_sign*applied_torque;
+        moveRobot(rob,0, applied_torque, torque_time);
 
         float t=0;
         int index = 0;
@@ -365,8 +370,13 @@ protected:
         {
             //std::cout << t << " torso rot 0 " << rob->rot()[0] << " torso rot 1 " << rob->rot()[1] << " torso rot 2 " << rob->rot()[2]  << std::endl;
             //returns <pitch; roll; yaw> in radians, in the interval [-pi,+pi] radians.  // pitch and roll are interchanged because the robot is now moving along the y axis
-
-            moveRobot(rob,t);
+#ifndef TORQUETEST
+            moveRobot(rob,t, applied_torque, torque_time);
+#else
+            if (t>=1.0 && t<=1.1){
+              rob->apply_torque(0.0, 0.0, applied_torque);
+            }
+#endif
 
             if(_robot->bodies()[0]->get_in_contact() || _env->get_colision_between_legs())
             {//Death if robot main body touches ground or if legs collide
@@ -601,7 +611,7 @@ template<typename NN> float Simu<NN> :: timer(size_t leg, size_t servo, bool pre
 
 
 
-template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
+template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t, double applied_torque, double torque_time)
 {
     size_t tmp_leg = 0;
     for(size_t funclastlegsegment = 3; funclastlegsegment < rob->bodies().size(); funclastlegsegment+=3)
@@ -707,7 +717,17 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
             assert(_offset_time[leg][0] == _offset_time[leg][1]);
         }
     }
-
+#ifdef TORQUE
+ #ifdef LONG
+  if (t>=5.0 && t<=5.1){
+    rob->apply_torque(0.0, 0.0, applied_torque);
+  }
+ #else
+  if (t>=torque_time && t<=(torque_time+0.1)){
+    rob->apply_torque(0.0, 0.0, applied_torque);
+  }
+ #endif
+#endif
 #ifdef DETAIL_LOGS
     static std::ofstream ofs(std::string("output_cpnn.dat").c_str());
     ofs << t << " ";
