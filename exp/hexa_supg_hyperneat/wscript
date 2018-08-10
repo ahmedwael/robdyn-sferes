@@ -23,4 +23,4 @@ def build(bld):
                            uselib = libs,
                            target = 'hexa_supg_hyperneat',
                            json = '',
-                           variants = ['OFBV36 ORIENTFB TORQUE TEXT', 'OFBV36 ORIENTFB TORQUE TEXT', 'TORQUE TEXT', 'TORQUE GRAPHIC'])
+                           variants = ['OFBV36 ORIENTFB TORQUE TEXT', 'OFBV36 ORIENTFB TORQUE GRAPHIC', 'TORQUE TEXT', 'TORQUE GRAPHIC'])
