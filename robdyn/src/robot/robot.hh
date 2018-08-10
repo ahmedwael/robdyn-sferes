@@ -27,13 +27,13 @@ namespace robot
 	  _bodies.push_back(b2);
 	}
       BOOST_FOREACH(Servo::ptr_t s, o._servos)
-	_servos.push_back(s->clone(env, 
-				   *old_to_new[&s->get_o1()], 
+	_servos.push_back(s->clone(env,
+				   *old_to_new[&s->get_o1()],
 				   *old_to_new[&s->get_o2()]));
 
       BOOST_FOREACH(Motor::ptr_t s, o._motors)
-	_motors.push_back(s->clone(env, 
-				   *old_to_new[&s->get_o1()], 
+	_motors.push_back(s->clone(env,
+				   *old_to_new[&s->get_o1()],
 				   *old_to_new[&s->get_o2()]));
       _main_body = old_to_new[o._main_body.get()];
     }
@@ -52,15 +52,19 @@ namespace robot
     Eigen::Vector3d pos() const { return _main_body->get_pos(); }
     Eigen::Vector3d rot() const { return _main_body->get_rot(); }
     Eigen::Vector3d vel() const { return _main_body->get_vel(); }
+    void apply_torque(double x, double y, double z) {
+      dBodyAddTorque(_main_body->get_body(),x,y,z);
+      return;
+    }
     virtual void accept (ode::ConstVisitor &v) const { v.visit(_bodies); }
- 
+
     virtual void next_step(double dt = ode::Environment::time_step)
     {
       BOOST_FOREACH(ode::Object::ptr_t s, _bodies)
 	s->set_in_contact(false);
-      BOOST_FOREACH(ode::Servo::ptr_t s, _servos) 
+      BOOST_FOREACH(ode::Servo::ptr_t s, _servos)
 	s->next_step(dt);
-      BOOST_FOREACH(ode::Motor::ptr_t s, _motors) 
+      BOOST_FOREACH(ode::Motor::ptr_t s, _motors)
 	s->next_step(dt);
     }
   protected:
