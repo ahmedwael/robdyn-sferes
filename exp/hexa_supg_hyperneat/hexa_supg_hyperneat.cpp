@@ -360,7 +360,16 @@ SFERES_FITNESS(FitSpace, sferes::fit::Fitness)
 #ifdef SEEDED_ENTIREPOP
         Simu <typename Indiv::gen_t> simu(indiv.gen(), global::gen < global::dmgatgen ? global::robot : global::robot_dmg, global::gen < global::dmgatgen ? global::brokenLegs : global::brokenLegs_dmg, 5.0);
 #else
+#ifdef LONG
+       Simu <typename Indiv::gen_t> simu(indiv.gen(), global::robot, global::brokenLegs, 15.0, global::env->angle);
+ #else
+  #ifdef TORQUETEST
+       Simu <typename Indiv::gen_t> simu(indiv.gen(), global::robot, global::brokenLegs, 2.0, global::env->angle);
+  #else
        Simu <typename Indiv::gen_t> simu(indiv.gen(), global::robot, global::brokenLegs, 5.0, global::env->angle);
+  #endif
+ #endif
+
 #endif
 
         this->_dist=simu.covered_distance();
@@ -417,7 +426,7 @@ SFERES_FITNESS(FitSpace, sferes::fit::Fitness)
         {
             std::cout << " _behavior.performance " << _behavior.performance << std::endl;
             std::cout << " _direction " << _behavior.direction << std::endl;
-
+            std::cout << " arrival angle " << simu.arrival_angle() << std::endl;
             std::cout << " frequency " << simu.servo_frequencies_max << std::endl;
             std::cout << " corridor time " << simu.end_time;
 
@@ -427,6 +436,7 @@ SFERES_FITNESS(FitSpace, sferes::fit::Fitness)
             ofs << _behavior.direction << std::endl;
             ofs << this->_covered_distance << std::endl;
             ofs << simu.servo_frequencies_max << std::endl;
+            ofs << simu.arrival_angle() << std::endl;
             ofs << simu.end_time << std::endl;
 
             ofs.close();
