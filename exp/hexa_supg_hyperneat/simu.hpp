@@ -27,26 +27,11 @@
 #include <sferes/run.hpp>
 #include <sferes/misc.hpp>
 
-#ifdef OFBV90
- #define ORIENTFB_ANGLE_SENSITIVITY 90.0
-#endif
-#ifdef OFBV70
- #define ORIENTFB_ANGLE_SENSITIVITY 70.0
-#endif
-#ifdef OFBV50
- #define ORIENTFB_ANGLE_SENSITIVITY 50.0
-#endif
 #ifdef OFBV36
  #define ORIENTFB_ANGLE_SENSITIVITY 36.0
 #endif
-#ifdef OFBV24
- #define ORIENTFB_ANGLE_SENSITIVITY 24.0
-#endif
 #ifdef OFBV18
  #define ORIENTFB_ANGLE_SENSITIVITY 18.0
-#endif
-#ifdef OFBV10
- #define ORIENTFB_ANGLE_SENSITIVITY 10.0
 #endif
 #ifndef ORIENTFB_ANGLE_SENSITIVITY
 #define ORIENTFB_ANGLE_SENSITIVITY 180.0
@@ -54,8 +39,8 @@
 #ifdef BIAS_30
  #define BIAS 30.0
 #else
- #ifdef BIAS_60
-  #define BIAS 60.0
+ #ifdef BIAS_30N
+  #define BIAS -30.0
  #else
   #define BIAS 0.0
  #endif
@@ -726,7 +711,7 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
     }
 #ifdef FORCED
     if (t>=5.0 && t<=5.2){
-      rob->apply_force_com(-15.0, 0.0, 0.0);
+      rob->apply_force_com();
     }
 #endif
     if (t>=5.0){
