@@ -264,7 +264,7 @@ public:
     }
 
     float timer(size_t leg, size_t servo, bool prev_contact, bool contact);
-    void moveRobot(robot_t rob, float t);
+    void moveRobot(robot_t rob, float t, double applied_torque);
     std::vector<std::vector<float> > angles_forfft;
     float servo_frequencies_max;
 
@@ -350,8 +350,8 @@ protected:
         robot_t rob = this->robot();
         Eigen::Vector3d rot=rob->rot();
         _arrival_angle= atan2( cos(rot[2])* sin(rot[1])* sin(rot[0]) + sin(rot[2])* cos(rot[0]), cos(rot[2])* cos(rot[1]))*180/M_PI;
-
-        moveRobot(rob,0);
+        double applied_torque = 5.0;
+        moveRobot(rob,0, applied_torque);
 
         float t=0;
         int index = 0;
@@ -364,7 +364,7 @@ protected:
             //std::cout << t << " torso rot 0 " << rob->rot()[0] << " torso rot 1 " << rob->rot()[1] << " torso rot 2 " << rob->rot()[2]  << std::endl;
             //returns <pitch; roll; yaw> in radians, in the interval [-pi,+pi] radians.  // pitch and roll are interchanged because the robot is now moving along the y axis
 
-            moveRobot(rob,t);
+            moveRobot(rob,t,applied_torque);
 
             if(_robot->bodies()[0]->get_in_contact() || _env->get_colision_between_legs())
             {//Death if robot main body touches ground or if legs collide
@@ -599,7 +599,7 @@ template<typename NN> float Simu<NN> :: timer(size_t leg, size_t servo, bool pre
 
 
 
-template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
+template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t, double applied_torque)
 {
     size_t tmp_leg = 0;
     float bias_rad = BIAS*M_PI/180.0f;
@@ -712,6 +712,11 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
 #ifdef FORCED
     if (t>=5.0 && t<=5.2){
       rob->apply_force_com();
+    }
+#endif
+#ifdef TORQUE
+    if (t>=5.0 && t<=5.1){
+      rob->apply_torque(0.0, 0.0, applied_torque);
     }
 #endif
     if (t>=5.0){

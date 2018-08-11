@@ -57,7 +57,10 @@ namespace robot
       dBodyAddRelForceAtRelPos(_main_body->get_body(),15.0,0.0,0.0,-0.1,0.1,0.0);
       return;
     }
-
+    void apply_torque(double x, double y, double z) {
+      dBodyAddTorque(_main_body->get_body(),x,y,z);
+      return;
+    }
     virtual void accept (ode::ConstVisitor &v) const { v.visit(_bodies); }
 
     virtual void next_step(double dt = ode::Environment::time_step)
