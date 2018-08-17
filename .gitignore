@@ -11,12 +11,14 @@ sferes2/contact_simu.txt
 sferes2/performance_metrics.dat
 sferes2/traj_simu.txt
 sferes2/test_ofb*
+sferes2/run_exp.sh
+sferes2/run_multiple.sh
 robdyn/.waf*
 robdyn/.lock-wscript
 robdyn/bld
 exp/hexa_supg_hyperneat/hexa_supg_hyperneat_*
 compile_all.sh
-*.fig
-*.png
 *.m
 *.m~
+*.png
+*.fig

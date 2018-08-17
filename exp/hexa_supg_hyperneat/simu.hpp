@@ -27,29 +27,23 @@
 #include <sferes/run.hpp>
 #include <sferes/misc.hpp>
 
-#ifdef OFBV90
- #define ORIENTFB_ANGLE_SENSITIVITY 90.0
-#endif
-#ifdef OFBV70
- #define ORIENTFB_ANGLE_SENSITIVITY 70.0
-#endif
-#ifdef OFBV50
- #define ORIENTFB_ANGLE_SENSITIVITY 50.0
-#endif
 #ifdef OFBV36
  #define ORIENTFB_ANGLE_SENSITIVITY 36.0
-#endif
-#ifdef OFBV24
- #define ORIENTFB_ANGLE_SENSITIVITY 24.0
 #endif
 #ifdef OFBV18
  #define ORIENTFB_ANGLE_SENSITIVITY 18.0
 #endif
-#ifdef OFBV10
- #define ORIENTFB_ANGLE_SENSITIVITY 10.0
-#endif
 #ifndef ORIENTFB_ANGLE_SENSITIVITY
 #define ORIENTFB_ANGLE_SENSITIVITY 180.0
+#endif
+#ifdef BIAS_30
+ #define BIAS 30.0
+#else
+ #ifdef BIAS_30N
+  #define BIAS -30.0
+ #else
+  #define BIAS 0.0
+ #endif
 #endif
 template<typename NN> class Simu
 {
@@ -99,7 +93,11 @@ public:
 
         try
         {
+#ifdef LONG
+            duration = 15.0;
+#else
             duration = 5.0;
+#endif
             _make_robot_init(duration);
         }
         catch (int e)
@@ -266,7 +264,7 @@ public:
     }
 
     float timer(size_t leg, size_t servo, bool prev_contact, bool contact);
-    void moveRobot(robot_t rob, float t);
+    void moveRobot(robot_t rob, float t, double applied_torque);
     std::vector<std::vector<float> > angles_forfft;
     float servo_frequencies_max;
 
@@ -352,8 +350,8 @@ protected:
         robot_t rob = this->robot();
         Eigen::Vector3d rot=rob->rot();
         _arrival_angle= atan2( cos(rot[2])* sin(rot[1])* sin(rot[0]) + sin(rot[2])* cos(rot[0]), cos(rot[2])* cos(rot[1]))*180/M_PI;
-
-        moveRobot(rob,0);
+        double applied_torque = 5.0;
+        moveRobot(rob,0, applied_torque);
 
         float t=0;
         int index = 0;
@@ -366,7 +364,7 @@ protected:
             //std::cout << t << " torso rot 0 " << rob->rot()[0] << " torso rot 1 " << rob->rot()[1] << " torso rot 2 " << rob->rot()[2]  << std::endl;
             //returns <pitch; roll; yaw> in radians, in the interval [-pi,+pi] radians.  // pitch and roll are interchanged because the robot is now moving along the y axis
 
-            moveRobot(rob,t);
+            moveRobot(rob,t,applied_torque);
 
             if(_robot->bodies()[0]->get_in_contact() || _env->get_colision_between_legs())
             {//Death if robot main body touches ground or if legs collide
@@ -601,9 +599,13 @@ template<typename NN> float Simu<NN> :: timer(size_t leg, size_t servo, bool pre
 
 
 
-template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
+template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t, double applied_torque)
 {
     size_t tmp_leg = 0;
+    float bias_rad = BIAS*M_PI/180.0f;
+    int bias_active = 0;
+    float shutoff_inactive = 1.0f;
+    bool force_applied = false;
     for(size_t funclastlegsegment = 3; funclastlegsegment < rob->bodies().size(); funclastlegsegment+=3)
     {
         for (int j=0;j<_brokenLegs.size();j++)
@@ -707,7 +709,22 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
             assert(_offset_time[leg][0] == _offset_time[leg][1]);
         }
     }
-
+#ifdef FORCED
+    if (t>=5.0 && t<=5.2){
+      rob->apply_force_com();
+    }
+#endif
+#ifdef TORQUE
+    if (t>=5.0 && t<=5.1){
+      rob->apply_torque(0.0, 0.0, applied_torque);
+    }
+#endif
+    if (t>=5.0){
+      bias_active = 1;
+#ifdef SHUTOFF
+      shutoff_inactive = 0.0f;
+#endif
+    }
 #ifdef DETAIL_LOGS
     static std::ofstream ofs(std::string("output_cpnn.dat").c_str());
     ofs << t << " ";
@@ -733,7 +750,7 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
 #ifndef ORIENTFB
             std::vector<float> r = _ctrlrob.query(boost::make_tuple(x, y, timer_output));
 #else
-            float custom_orient = (180/ORIENTFB_ANGLE_SENSITIVITY)*rob->rot()[2]/M_PI;
+            float custom_orient = shutoff_inactive*(180.0f/ORIENTFB_ANGLE_SENSITIVITY)*(rob->rot()[2]-(bias_rad*bias_active))/M_PI;
             if (custom_orient > 1.0)
               custom_orient = 1.0;
             if (custom_orient < -1.0)
@@ -771,7 +788,7 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t)
 #ifndef ORIENTFB
             std::vector<float> r = _ctrlrob.query(boost::make_tuple(x, y, timer_output));
 #else
-            float custom_orient = (180/ORIENTFB_ANGLE_SENSITIVITY)*rob->rot()[2]/M_PI;
+            float custom_orient = shutoff_inactive*(180.0f/ORIENTFB_ANGLE_SENSITIVITY)*(rob->rot()[2]-(bias_rad*bias_active))/M_PI;
             if (custom_orient > 1.0)
               custom_orient = 1.0;
             if (custom_orient < -1.0)
