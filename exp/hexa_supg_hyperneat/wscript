@@ -23,11 +23,14 @@ def build(bld):
                            uselib = libs,
                            target = 'hexa_supg_hyperneat',
                            json = '',
-                           variants = ['TEXT','GRAPHIC', 'ORIENTFB TEXT', 'ORIENTFB GRAPHIC', \
-                            'OFBV90 ORIENTFB TEXT', 'OFBV90 ORIENTFB GRAPHIC', \
-                            'OFBV70 ORIENTFB TEXT', 'OFBV70 ORIENTFB GRAPHIC', \
-                            'OFBV50 ORIENTFB TEXT', 'OFBV50 ORIENTFB GRAPHIC', \
-                            'OFBV36 ORIENTFB TEXT', 'OFBV36 ORIENTFB GRAPHIC', \
-                            'OFBV24 ORIENTFB TEXT', 'OFBV24 ORIENTFB GRAPHIC', \
-                            'OFBV18 ORIENTFB TEXT', 'OFBV18 ORIENTFB GRAPHIC', \
-                            'OFBV10 ORIENTFB TEXT', 'OFBV10 ORIENTFB GRAPHIC',])
+                           variants = ['OFBV18 ORIENTFB LONG BIAS_30N TEXT', 'OFBV18 ORIENTFB LONG BIAS_30N GRAPHIC', \
+                           'OFBV36 ORIENTFB LONG BIAS_30N TEXT', 'OFBV36 ORIENTFB LONG BIAS_30N GRAPHIC', \
+                           'ORIENTFB LONG BIAS_30N TEXT', 'ORIENTFB LONG BIAS_30N GRAPHIC'])
+                           #  'OFBV90 ORIENTFB BIAS_60 TEXT', 'OFBV90 ORIENTFB BIAS_60 GRAPHIC', \
+                           #  'OFBV70 ORIENTFB BIAS_60 TEXT', 'OFBV70 ORIENTFB BIAS_60 GRAPHIC', \
+                           #  'OFBV50 ORIENTFB BIAS_60 TEXT', 'OFBV50 ORIENTFB BIAS_60 GRAPHIC', \
+                           #  'OFBV36 ORIENTFB BIAS_60 TEXT', 'OFBV36 ORIENTFB BIAS_60 GRAPHIC', \
+                           #  'OFBV24 ORIENTFB BIAS_60 TEXT', 'OFBV24 ORIENTFB BIAS_60 GRAPHIC', \
+                           #  'OFBV18 ORIENTFB BIAS_60 TEXT', 'OFBV18 ORIENTFB BIAS_60 GRAPHIC', \
+                           #  'OFBV10 ORIENTFB BIAS_60 TEXT', 'OFBV10 ORIENTFB BIAS_60 GRAPHIC'])
+                           # 'LONG BIAS_30N TEXT', 'LONG BIAS_30N GRAPHIC', \
