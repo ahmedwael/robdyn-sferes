@@ -431,6 +431,7 @@ SFERES_FITNESS(FitSpace, sferes::fit::Fitness)
             ofs << _behavior.direction << std::endl;
             ofs << this->_covered_distance << std::endl;
             ofs << simu.servo_frequencies_max << std::endl;
+            ofs << simu.arrival_angle() << std::endl;
             ofs << simu.end_time << std::endl;
 
             ofs.close();
