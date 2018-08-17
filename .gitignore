@@ -16,3 +16,7 @@ robdyn/.lock-wscript
 robdyn/bld
 exp/hexa_supg_hyperneat/hexa_supg_hyperneat_*
 compile_all.sh
+*.fig
+*.png
+*.m
+*.m~
