@@ -27,6 +27,8 @@
 #include <sferes/run.hpp>
 #include <sferes/misc.hpp>
 
+#include <random>
+
 #ifdef OFBV36
  #define ORIENTFB_ANGLE_SENSITIVITY 36.0
 #endif
@@ -43,6 +45,15 @@
   #define BIAS -30.0
  #else
   #define BIAS 0.0
+ #endif
+#endif
+#ifdef ANGLED_30
+ #define ANGLE 30.0
+#else
+ #ifdef ANGLED_60
+  #define ANGLE 60.0
+ #else
+  #define ANGLE 0.0
  #endif
 #endif
 template<typename NN> class Simu
@@ -64,6 +75,12 @@ public:
     #endif
         _ctrlrob(ctrl)
     {
+        std::uniform_int_distribution<int> sign_uni_dist(0, 1);
+        std::random_device rd{};
+        std::mt19937 generator{rd()};
+        _fitness_angle_sign = sign_uni_dist(generator);
+        if (!_fitness_angle_sign)
+        _fitness_angle_sign = -1;
         for(size_t leg = 0; leg < 6; ++leg)
         {
             std::vector<float> param(2, 0.0);
@@ -146,6 +163,11 @@ public:
     float slam_duration()
     {
         return _slam_duration;
+    }
+
+    int fitness_angle_sign()
+    {
+        return _fitness_angle_sign;
     }
 
     std::vector <float> get_rel_grf_bd(std::vector <float> &grf_eachleg, float total_force)
@@ -497,9 +519,13 @@ protected:
         _final_pos[1]=next_pos[1];
 
 
-        _covered_distance = round(_final_pos[1]*100) / 100.0f; // taking only the y-component of the distance travelled
+        std::vector <float> _goal_pos; _goal_pos.resize(2); _goal_pos[0] = 25.0*sin(ANGLE*M_PI/180.0); _goal_pos[1] = 25.0*cos(ANGLE*M_PI/180.0); // a very far out goal (e.g. at 400 m) would not penalize the variant turning phenotypes enough
 
-        _direction=atan2(-next_pos[0],next_pos[1])*180/M_PI;
+        //_covered_distance = round(_final_pos[1]*100) / 100.0f; // taking only the y-component of the distance travelled
+        _covered_distance = round(sqrt( (_final_pos[0]*_final_pos[0]) + (_final_pos[1]*_final_pos[1])));
+
+        //_direction=atan2(-next_pos[0],next_pos[1])*180/M_PI;
+        _direction=atan2(-1*(_goal_pos[0]*next_pos[1] - _goal_pos[1]*next_pos[0]),_goal_pos[0]*next_pos[0] + _goal_pos[1]*next_pos[1])*180/M_PI;
         rot=rob->rot();
         _arrival_angle= atan2( cos(rot[2])* sin(rot[1])* sin(rot[0])
                 + sin(rot[2])* cos(rot[0]), cos(rot[2])* cos(rot[1]))*180/M_PI;
@@ -564,6 +590,7 @@ protected:
     float _covered_distance;
     float _slam_duration;
     float _energy;
+    int _fitness_angle_sign;
     boost::shared_ptr<ode::Environment_hexa> _env;
 #ifdef GRAPHIC
     renderer::OsgVisitor _visitor;
@@ -606,6 +633,7 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t, double ap
     int bias_active = 0;
     float shutoff_inactive = 1.0f;
     bool force_applied = false;
+    float angle_rad = _fitness_angle_sign*ANGLE*M_PI/180.0f;
     for(size_t funclastlegsegment = 3; funclastlegsegment < rob->bodies().size(); funclastlegsegment+=3)
     {
         for (int j=0;j<_brokenLegs.size();j++)
@@ -750,7 +778,7 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t, double ap
 #ifndef ORIENTFB
             std::vector<float> r = _ctrlrob.query(boost::make_tuple(x, y, timer_output));
 #else
-            float custom_orient = shutoff_inactive*(180.0f/ORIENTFB_ANGLE_SENSITIVITY)*(rob->rot()[2]-(bias_rad*bias_active))/M_PI;
+            float custom_orient = shutoff_inactive*(180.0f/ORIENTFB_ANGLE_SENSITIVITY)*(rob->rot()[2]-angle_rad-(bias_rad*bias_active))/M_PI;
             if (custom_orient > 1.0)
               custom_orient = 1.0;
             if (custom_orient < -1.0)
@@ -788,7 +816,7 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t, double ap
 #ifndef ORIENTFB
             std::vector<float> r = _ctrlrob.query(boost::make_tuple(x, y, timer_output));
 #else
-            float custom_orient = shutoff_inactive*(180.0f/ORIENTFB_ANGLE_SENSITIVITY)*(rob->rot()[2]-(bias_rad*bias_active))/M_PI;
+                        float custom_orient = shutoff_inactive*(180.0f/ORIENTFB_ANGLE_SENSITIVITY)*(rob->rot()[2]-angle_rad-(bias_rad*bias_active))/M_PI;
             if (custom_orient > 1.0)
               custom_orient = 1.0;
             if (custom_orient < -1.0)

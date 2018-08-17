@@ -402,10 +402,9 @@ SFERES_FITNESS(FitSpace, sferes::fit::Fitness)
                     features.push_back(legs_features[i][j]);
                     _behavior.features.push_back(legs_features[i][j]);
                 }
-
+            int fitness_angle_sign = simu.fitness_angle_sign();
             _behavior.position = simu.final_pos();
-            std::vector <float> goal_pos; goal_pos.resize(2); goal_pos[0] = 0.0; goal_pos[1] = 25.0; // a very far out goal (e.g. at 400 m) would not penalize the variant turning phenotypes enough
-
+            std::vector <float> goal_pos; goal_pos.resize(2); goal_pos[0] = 25.0*sin(fitness_angle_sign*ANGLE*M_PI/180.0); goal_pos[1] = 25.0*cos(fitness_angle_sign*ANGLE*M_PI/180.0); // a very far out goal (e.g. at 400 m) would not penalize the variant turning phenotypes enough
             _behavior.performance = -round(sqrt(
                                              (_behavior.position[0]-goal_pos[0])*(_behavior.position[0]-goal_pos[0]) +
                                              (_behavior.position[1]-goal_pos[1])*(_behavior.position[1]-goal_pos[1]))*100) / 100.0f; //-ve sign so as to maximize this quantity
