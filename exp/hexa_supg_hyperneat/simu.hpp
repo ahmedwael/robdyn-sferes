@@ -216,7 +216,7 @@ public:
     void write_contact(std::string const name)
     {
         std::string fullname = name + "_" + std::to_string(_fitness_angle_sign);
-        std::ofstream workingFile(name.c_str());
+        std::ofstream workingFile(fullname.c_str());
 
         if (workingFile)
             for (int i =0;i<_behavior_contact_0.size();i++)
