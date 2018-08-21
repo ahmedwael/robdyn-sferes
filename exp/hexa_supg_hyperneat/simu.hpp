@@ -75,12 +75,18 @@ public:
     #endif
         _ctrlrob(ctrl)
     {
-        std::uniform_int_distribution<int> sign_uni_dist(0, 1);
-        std::random_device rd{};
-        std::mt19937 generator{rd()};
-        _fitness_angle_sign = sign_uni_dist(generator);
-        if (!_fitness_angle_sign)
+        // std::uniform_int_distribution<int> sign_uni_dist(0, 1);
+        // std::random_device rd{};
+        // std::mt19937 generator{rd()};
+        // _fitness_angle_sign = sign_uni_dist(generator);
+        // if (!_fitness_angle_sign)
+        // _fitness_angle_sign = -1;
+    #ifdef CW
+        _fitness_angle_sign = 1;
+    #endif
+    #ifdef ACW
         _fitness_angle_sign = -1;
+    #endif
         for(size_t leg = 0; leg < 6; ++leg)
         {
             std::vector<float> param(2, 0.0);
@@ -816,7 +822,7 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t, double ap
 #ifndef ORIENTFB
             std::vector<float> r = _ctrlrob.query(boost::make_tuple(x, y, timer_output));
 #else
-                        float custom_orient = shutoff_inactive*(180.0f/ORIENTFB_ANGLE_SENSITIVITY)*(rob->rot()[2]-angle_rad-(bias_rad*bias_active))/M_PI;
+            float custom_orient = shutoff_inactive*(180.0f/ORIENTFB_ANGLE_SENSITIVITY)*(rob->rot()[2]-angle_rad-(bias_rad*bias_active))/M_PI;
             if (custom_orient > 1.0)
               custom_orient = 1.0;
             if (custom_orient < -1.0)
