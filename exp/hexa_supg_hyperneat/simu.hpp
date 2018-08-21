@@ -47,11 +47,11 @@
   #define BIAS 0.0
  #endif
 #endif
-#ifdef ANGLED_30
- #define ANGLE 30.0
+#ifdef ANGLED_60
+ #define ANGLE 60.0
 #else
- #ifdef ANGLED_60
-  #define ANGLE 60.0
+ #ifdef ANGLED_30
+  #define ANGLE 30.0
  #else
   #define ANGLE 0.0
  #endif
@@ -63,30 +63,32 @@ public:
     typedef boost::shared_ptr<robot::Hexapod> robot_t;
 
 
-    Simu(NN& ctrl, const robot_t& robot, std::vector<int> brokenLegs, float duration, float floorangle) :
+    Simu(NN& ctrl, const robot_t& robot, std::vector<int> brokenLegs, float duration, float floorangle, int fitnessanglesign = 1) :
         _brokenLegs(brokenLegs),
         _covered_distance(-10002.0f),
         _slam_duration(0.0f),
         _energy(0.0f),
         _env(new ode::Environment_hexa(floorangle)),
-
+        _fitness_angle_sign(fitnessanglesign),
     #ifdef GRAPHIC
         _visitor(renderer::OsgVisitor::FOLLOW),
     #endif
         _ctrlrob(ctrl)
     {
-        // std::uniform_int_distribution<int> sign_uni_dist(0, 1);
-        // std::random_device rd{};
-        // std::mt19937 generator{rd()};
-        // _fitness_angle_sign = sign_uni_dist(generator);
-        // if (!_fitness_angle_sign)
-        // _fitness_angle_sign = -1;
+#ifdef FLIP_COIN_ANGLE
+        std::uniform_int_distribution<int> sign_uni_dist(0, 1);
+        std::random_device rd{};
+        std::mt19937 generator{rd()};
+        _fitness_angle_sign = sign_uni_dist(generator);
+        if (!_fitness_angle_sign)
+        _fitness_angle_sign = -1;
     #ifdef CW
         _fitness_angle_sign = 1;
     #endif
     #ifdef ACW
         _fitness_angle_sign = -1;
     #endif
+#endif
         for(size_t leg = 0; leg < 6; ++leg)
         {
             std::vector<float> param(2, 0.0);
@@ -213,6 +215,7 @@ public:
 
     void write_contact(std::string const name)
     {
+        std::string fullname = name + "_" + std::to_string(_fitness_angle_sign);
         std::ofstream workingFile(name.c_str());
 
         if (workingFile)
@@ -224,7 +227,8 @@ public:
 
     void write_traj(std::string const name)
     {
-        std::ofstream workingFile(name.c_str());
+        std::string fullname = name + "_" + std::to_string(_fitness_angle_sign);
+        std::ofstream workingFile(fullname.c_str());
         if (workingFile)
             for (int i =0;i<_behavior_traj.size();i++)
                 workingFile<<_behavior_traj[i][0]<<" "<<_behavior_traj[i][1]<<" "<<_behavior_traj[i][2]<<std::endl;
@@ -525,12 +529,10 @@ protected:
         _final_pos[1]=next_pos[1];
 
 
-        std::vector <float> _goal_pos; _goal_pos.resize(2); _goal_pos[0] = 25.0*sin(ANGLE*M_PI/180.0); _goal_pos[1] = 25.0*cos(ANGLE*M_PI/180.0); // a very far out goal (e.g. at 400 m) would not penalize the variant turning phenotypes enough
+        std::vector <float> _goal_pos; _goal_pos.resize(2); _goal_pos[0] = 25.0*sin(_fitness_angle_sign*ANGLE*M_PI/180.0); _goal_pos[1] = 25.0*cos(_fitness_angle_sign*ANGLE*M_PI/180.0); // a very far out goal (e.g. at 400 m) would not penalize the variant turning phenotypes enough
 
         //_covered_distance = round(_final_pos[1]*100) / 100.0f; // taking only the y-component of the distance travelled
         _covered_distance = round(sqrt( (_final_pos[0]*_final_pos[0]) + (_final_pos[1]*_final_pos[1])));
-
-        //_direction=atan2(-next_pos[0],next_pos[1])*180/M_PI;
         _direction=atan2(-1*(_goal_pos[0]*next_pos[1] - _goal_pos[1]*next_pos[0]),_goal_pos[0]*next_pos[0] + _goal_pos[1]*next_pos[1])*180/M_PI;
         rot=rob->rot();
         _arrival_angle= atan2( cos(rot[2])* sin(rot[1])* sin(rot[0])
