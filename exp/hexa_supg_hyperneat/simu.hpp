@@ -137,7 +137,14 @@ public:
         //write_traj(res_name + "traj_simu.txt");
         write_contact("contact_simu.txt");
         write_traj("traj_simu.txt");
-#endif
+        write_orientation("orientation_simu.txt");
+#else
+ #ifdef OLOGS
+      write_contact("contact_simu.txt");
+      write_traj("traj_simu.txt");
+      write_orientation("orientation_simu.txt");
+ #endif
+# endif
     }
 
     ~Simu()
@@ -232,6 +239,17 @@ public:
         if (workingFile)
             for (int i =0;i<_behavior_traj.size();i++)
                 workingFile<<_behavior_traj[i][0]<<" "<<_behavior_traj[i][1]<<" "<<_behavior_traj[i][2]<<std::endl;
+        else
+            std::cout << "ERROR: Impossible to open the file." << std::endl;
+    }
+
+    void write_orientation(std::string const name)
+    {
+        std::string fullname = name + "_" + std::to_string(_fitness_angle_sign);
+        std::ofstream workingFile(fullname.c_str());
+        if (workingFile)
+            for (int i =0;i<yaw_vec.size();i++)
+                workingFile<<yaw_vec[i]<<<<std::endl;
         else
             std::cout << "ERROR: Impossible to open the file." << std::endl;
     }
