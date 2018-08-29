@@ -75,7 +75,7 @@ public:
     #endif
         _ctrlrob(ctrl)
     {
-#ifdef FLIP_COIN_ANGLE
+#ifdef RANDOM
         std::uniform_int_distribution<int> sign_uni_dist(0, 1);
         std::random_device rd{};
         std::mt19937 generator{rd()};
