@@ -249,7 +249,7 @@ public:
         std::ofstream workingFile(fullname.c_str());
         if (workingFile)
             for (int i =0;i<yaw_vec.size();i++)
-                workingFile<<yaw_vec[i]<<<<std::endl;
+                workingFile<<yaw_vec[i]*180/M_PI<<std::endl;
         else
             std::cout << "ERROR: Impossible to open the file." << std::endl;
     }
