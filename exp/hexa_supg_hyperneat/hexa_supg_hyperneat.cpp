@@ -278,7 +278,9 @@ SFERES_FITNESS(FitSpace, sferes::fit::Fitness)
 {
     public:
     float servo_frequencies_max;
-
+#ifdef PN
+    float servo_frequencies_max_b;
+#endif
     template<typename Indiv>
 
     void eval(Indiv& indiv, bool write_objs = false)
@@ -288,6 +290,9 @@ SFERES_FITNESS(FitSpace, sferes::fit::Fitness)
         this->_objs.resize(3);
         std::fill(this->_objs.begin(), this->_objs.end(), 0);
         _dead=false; //the dead robot is awarded a huge -ve performance value
+#ifdef PN
+        _dead_b=false; //the dead robot is awarded a huge -ve performance value
+#endif
         _eval(indiv, write_objs);
     }
 
@@ -313,7 +318,15 @@ SFERES_FITNESS(FitSpace, sferes::fit::Fitness)
     float covered_distance(){return this-> _covered_distance;}
     float arrival_angle(){return this->_arrival_angle;}
     bool dead(){return this->_dead;}
-
+#ifdef PN
+    std::vector<Eigen::Vector3d> get_traj_b(){return _traj_b;}
+    Behavior& behavior_b(){return this->_behavior_b;}
+    const Behavior& behavior_b() const{return this->_behavior_b;}
+    float direction_b(){return this-> _direction_b;}
+    float covered_distance_b(){return this-> _covered_distance_b;}
+    float arrival_angle_b(){return this->_arrival_angle_b;}
+    bool dead_b(){return this->_dead_b;}
+#endif
     size_t cppn_nodes() const { return _cppn_nodes; }
     size_t cppn_conns() const { return _cppn_conns; }
     size_t nn_nodes() const { return _nn_nodes; }
@@ -321,7 +334,10 @@ SFERES_FITNESS(FitSpace, sferes::fit::Fitness)
 
     std::vector<std::vector<float> > legs_features;
     std::vector<float>  features;
-
+#ifdef PN
+    std::vector<std::vector<float> > legs_features_b;
+    std::vector<float>  features_b;
+#endif
    protected:
     float _dist;
     Behavior _behavior;
@@ -330,7 +346,15 @@ SFERES_FITNESS(FitSpace, sferes::fit::Fitness)
     float _covered_distance;
     bool _dead;
     std::vector<Eigen::Vector3d> _traj;
-
+#ifdef PN
+    float _dist_b;
+    Behavior _behavior_b;
+    float _arrival_angle_b;
+    float _direction_b;
+    float _covered_distance_b;
+    bool _dead_b;
+    std::vector<Eigen::Vector3d> _traj_b;
+#endif
     size_t _cppn_nodes;
     size_t _cppn_conns;
     size_t _nn_nodes;
@@ -364,6 +388,9 @@ SFERES_FITNESS(FitSpace, sferes::fit::Fitness)
        Simu <typename Indiv::gen_t> simu(indiv.gen(), global::robot, global::brokenLegs, 15.0, global::env->angle);
  #else
        Simu <typename Indiv::gen_t> simu(indiv.gen(), global::robot, global::brokenLegs, 5.0, global::env->angle);
+ #ifdef PN
+       Simu <typename Indiv::gen_t> simu_b(indiv.gen(), global::robot, global::brokenLegs, 5.0, global::env->angle, -1);
+ #endif
  #endif
 #endif
 
@@ -371,9 +398,14 @@ SFERES_FITNESS(FitSpace, sferes::fit::Fitness)
         this->_covered_distance= simu.covered_distance();//euclidean dist
         this->_direction = simu.direction();
         this->_arrival_angle=simu.arrival_angle();//orientation of robots final pos wrt y axis
-
         this->servo_frequencies_max = simu.servo_frequencies_max;
-
+#ifdef PN
+        this->_dist_b=simu_b.covered_distance();
+        this->_covered_distance_b= simu_b.covered_distance();//euclidean dist
+        this->_direction_b = simu_b.direction();
+        this->_arrival_angle_b=simu_b.arrival_angle();//orientation of robots final pos wrt y axis
+        this->servo_frequencies_max_b = simu_b.servo_frequencies_max;
+#endif
         if(this->_covered_distance<-1000.0)
         {
             _dead=true;
@@ -383,6 +415,9 @@ SFERES_FITNESS(FitSpace, sferes::fit::Fitness)
             _behavior.performance = -1000.0;
             _behavior.arrivalangle = -1000.0;
             _behavior.direction = -1000.0;
+
+            this->_objs[0] = -1000.0;
+            this->_objs[1] = -1000.0;
         }
         else
         {
@@ -402,10 +437,9 @@ SFERES_FITNESS(FitSpace, sferes::fit::Fitness)
                     features.push_back(legs_features[i][j]);
                     _behavior.features.push_back(legs_features[i][j]);
                 }
-
+            int fitness_angle_sign = simu.fitness_angle_sign();
             _behavior.position = simu.final_pos();
-            std::vector <float> goal_pos; goal_pos.resize(2); goal_pos[0] = 0.0; goal_pos[1] = 25.0; // a very far out goal (e.g. at 400 m) would not penalize the variant turning phenotypes enough
-
+            std::vector <float> goal_pos; goal_pos.resize(2); goal_pos[0] = 25.0*sin(fitness_angle_sign*ANGLE*M_PI/180.0); goal_pos[1] = 25.0*cos(fitness_angle_sign*ANGLE*M_PI/180.0); // a very far out goal (e.g. at 400 m) would not penalize the variant turning phenotypes enough
             _behavior.performance = -round(sqrt(
                                              (_behavior.position[0]-goal_pos[0])*(_behavior.position[0]-goal_pos[0]) +
                                              (_behavior.position[1]-goal_pos[1])*(_behavior.position[1]-goal_pos[1]))*100) / 100.0f; //-ve sign so as to maximize this quantity
@@ -415,17 +449,74 @@ SFERES_FITNESS(FitSpace, sferes::fit::Fitness)
             _behavior.direction = round(this->_direction * 100) / 100.0f; //two decimal places
             this->_objs[1] = -fabs(_behavior.direction);
         }
+#ifdef PN
+        //------------------------Part 2 of Simulation
+        if(this->_covered_distance_b<-1000.0)
+        {
+            _dead_b=true;
+            _behavior_b.position.resize(2);
+            _behavior_b.position[0]=0.0;
+            _behavior_b.position[1]=0.0;
+            _behavior_b.performance = -1000.0;
+            _behavior_b.arrivalangle = -1000.0;
+            _behavior_b.direction = -1000.0;
+
+            this->_objs[0] += -1000.0;
+            this->_objs[1] += -1000.0;
+        }
+        else
+        {
+            legs_features_b.clear();
+            legs_features_b.push_back(simu_b.get_contact(0));
+            legs_features_b.push_back(simu_b.get_contact(1));
+            legs_features_b.push_back(simu_b.get_contact(2));
+            legs_features_b.push_back(simu_b.get_contact(3));
+            legs_features_b.push_back(simu_b.get_contact(4));
+            legs_features_b.push_back(simu_b.get_contact(5));
+
+            _behavior_b.features.clear();
+            features_b.clear();
+            for(int i=0;i<legs_features_b.size();i++)
+                for(int j=0;j<legs_features_b[i].size();j++)
+                {
+                    features_b.push_back(legs_features_b[i][j]);
+                    _behavior_b.features.push_back(legs_features_b[i][j]);
+                }
+            int fitness_angle_sign = simu_b.fitness_angle_sign();
+            _behavior_b.position = simu_b.final_pos();
+            std::vector <float> goal_pos; goal_pos.resize(2); goal_pos[0] = 25.0*sin(fitness_angle_sign*ANGLE*M_PI/180.0); goal_pos[1] = 25.0*cos(fitness_angle_sign*ANGLE*M_PI/180.0); // a very far out goal (e.g. at 400 m) would not penalize the variant turning phenotypes enough
+            _behavior_b.performance = -round(sqrt(
+                                             (_behavior_b.position[0]-goal_pos[0])*(_behavior_b.position[0]-goal_pos[0]) +
+                                             (_behavior_b.position[1]-goal_pos[1])*(_behavior_b.position[1]-goal_pos[1]))*100) / 100.0f; //-ve sign so as to maximize this quantity
+            this->_objs[0] += _behavior_b.performance;
 
 
+            _behavior_b.direction = round(this->_direction_b * 100) / 100.0f; //two decimal places
+            this->_objs[1] += -fabs(_behavior_b.direction);
+        }
+        if (this->_objs[0] < -1000){
+          this->_objs[0] = -1000;
+          this->_objs[1] = -1000;
+        }
+        if (this->_objs[1] == -ANGLE)
+          this->_objs[1] *= 2.0;
+
+
+#endif
         if(this->mode() == sferes::fit::mode::view)
         {
             std::cout << " _behavior.performance " << _behavior.performance << std::endl;
-            std::cout << " _direction " << _behavior.direction << std::endl;
-
+            std::cout << " direction " << _behavior.direction << std::endl;
             std::cout << " frequency " << simu.servo_frequencies_max << std::endl;
-            std::cout << " corridor time " << simu.end_time;
-
-
+            std::cout << " corridor time " << simu.end_time << std::endl;
+#ifdef PN
+            std::cout << " _behavior.performance B " << _behavior_b.performance << std::endl;
+            std::cout << " direction B" << _behavior_b.direction << std::endl;
+            std::cout << " frequency B " << simu_b.servo_frequencies_max << std::endl;
+            std::cout << " corridor time B " << simu_b.end_time << std::endl;
+            std::cout << " combined performance " << this->_objs[0] << std::endl;
+            std::cout << " combined direction " << this->_objs[1] <<std::endl;
+#endif
             static std::ofstream ofs(std::string("performance_metrics.dat").c_str());
             ofs << _behavior.performance << std::endl;
             ofs << _behavior.direction << std::endl;
@@ -433,7 +524,14 @@ SFERES_FITNESS(FitSpace, sferes::fit::Fitness)
             ofs << simu.servo_frequencies_max << std::endl;
             ofs << simu.arrival_angle() << std::endl;
             ofs << simu.end_time << std::endl;
-
+#ifdef PN
+            ofs << _behavior_b.performance << std::endl;
+            ofs << _behavior_b.direction << std::endl;
+            ofs << this->_covered_distance_b << std::endl;
+            ofs << simu_b.servo_frequencies_max << std::endl;
+            ofs << simu_b.arrival_angle() << std::endl;
+            ofs << simu_b.end_time << std::endl;
+#endif
             ofs.close();
         }
 

@@ -7,12 +7,13 @@ sferes2/virtual*
 sferes2/GS60*
 sferes2/.waf*
 sferes2/.lock-wscript
-sferes2/contact_simu.txt
+sferes2/contact_simu*
 sferes2/performance_metrics.dat
-sferes2/traj_simu.txt
+sferes2/traj_simu*
 sferes2/test_ofb*
 sferes2/run_exp.sh
 sferes2/run_multiple.sh
+sferes2/angled*
 robdyn/.waf*
 robdyn/.lock-wscript
 robdyn/bld

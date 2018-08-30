@@ -214,8 +214,7 @@ public:
               ofs<<" shape=doublecircle";
             }
             else
-              ofs << " [label=\""<<nn.get_graph()[v].get_afparams().type()<<"\"";
-
+              ofs << " [label=\""<<func_names[nn.get_graph()[v].get_afparams().type()]<<"\"";
             ofs <<"]"<< std::endl;
         }
         BGL_FORALL_EDGES_T(e, nn.get_graph(), typename NN::graph_t)
