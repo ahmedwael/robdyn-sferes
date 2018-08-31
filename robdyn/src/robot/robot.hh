@@ -53,8 +53,8 @@ namespace robot
     Eigen::Vector3d rot() const { return _main_body->get_rot(); }
     Eigen::Vector3d vel() const { return _main_body->get_vel(); }
 
-    void apply_force_com() {
-      dBodyAddRelForceAtRelPos(_main_body->get_body(),15.0,0.0,0.0,-0.1,0.1,0.0);
+    void apply_force_com(double force_direction) {
+      dBodyAddRelForceAtRelPos(_main_body->get_body(),force_direction*15.0,0.0,0.0,force_direction*-0.1,0.1,0.0);
       return;
     }
     void apply_torque(double x, double y, double z) {

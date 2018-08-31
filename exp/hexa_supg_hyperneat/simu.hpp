@@ -41,11 +41,7 @@
 #ifdef BIAS_30
  #define BIAS 30.0
 #else
- #ifdef BIAS_30N
-  #define BIAS -30.0
- #else
-  #define BIAS 0.0
- #endif
+ #define BIAS 0.0
 #endif
 #ifdef ANGLED_60
  #define ANGLE 60.0
@@ -135,14 +131,14 @@ public:
         //std::string res_name = misc::hostname() + "_" + misc::date() + "_" + misc::getpid();
         //write_contact(res_name + "contact_simu.txt");
         //write_traj(res_name + "traj_simu.txt");
-        write_contact("contact_simu.txt");
-        write_traj("traj_simu.txt");
-        write_orientation("orientation_simu.txt");
+        write_contact("contact_simu");
+        write_traj("traj_simu");
+        write_orientation("orientation_simu");
 #else
  #ifdef OLOGS
-      write_contact("contact_simu.txt");
-      write_traj("traj_simu.txt");
-      write_orientation("orientation_simu.txt");
+      write_contact("contact_simu");
+      write_traj("traj_simu");
+      write_orientation("orientation_simu");
  #endif
 # endif
     }
@@ -222,7 +218,7 @@ public:
 
     void write_contact(std::string const name)
     {
-        std::string fullname = name + "_" + std::to_string(_fitness_angle_sign);
+        std::string fullname = name + "_" + std::to_string(_fitness_angle_sign) + ".txt";
         std::ofstream workingFile(fullname.c_str());
 
         if (workingFile)
@@ -234,7 +230,7 @@ public:
 
     void write_traj(std::string const name)
     {
-        std::string fullname = name + "_" + std::to_string(_fitness_angle_sign);
+        std::string fullname = name + "_" + std::to_string(_fitness_angle_sign) + ".txt";
         std::ofstream workingFile(fullname.c_str());
         if (workingFile)
             for (int i =0;i<_behavior_traj.size();i++)
@@ -245,7 +241,7 @@ public:
 
     void write_orientation(std::string const name)
     {
-        std::string fullname = name + "_" + std::to_string(_fitness_angle_sign);
+        std::string fullname = name + "_" + std::to_string(_fitness_angle_sign) + ".txt";
         std::ofstream workingFile(fullname.c_str());
         if (workingFile)
             for (int i =0;i<yaw_vec.size();i++)
@@ -400,7 +396,10 @@ protected:
         robot_t rob = this->robot();
         Eigen::Vector3d rot=rob->rot();
         _arrival_angle= atan2( cos(rot[2])* sin(rot[1])* sin(rot[0]) + sin(rot[2])* cos(rot[0]), cos(rot[2])* cos(rot[1]))*180/M_PI;
-        double applied_torque = 5.0;
+        double applied_torque = 10.0;
+    #ifdef NEGATIVE
+        applied_torque*=-1.0;
+    #endif
         moveRobot(rob,0, applied_torque);
 
         float t=0;
@@ -656,6 +655,9 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t, double ap
 {
     size_t tmp_leg = 0;
     float bias_rad = BIAS*M_PI/180.0f;
+  #ifdef NEGATIVE
+    bias_rad*=-1.0;
+  #endif
     int bias_active = 0;
     float shutoff_inactive = 1.0f;
     bool force_applied = false;
@@ -765,7 +767,11 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t, double ap
     }
 #ifdef FORCED
     if (t>=5.0 && t<=5.2){
-      rob->apply_force_com();
+#ifdef NEGATIVE
+      rob->apply_force_com(-1.0);
+#else
+      rob->apply_force_com(1.0);
+#endif
     }
 #endif
 #ifdef TORQUE
