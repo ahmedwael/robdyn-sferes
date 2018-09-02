@@ -4,7 +4,7 @@ set -x # verbose
 set -e # stop on errors
 
 #specify install directory
-INSTALL="/home/ahmed/robdyn-sferes/install"
+INSTALL="/home/user/robdyn-sferes/install"
 #echo "Install directory: ${INSTALL}"
 #NO_OSG=yes
 #OSG=no
