@@ -6,6 +6,7 @@ f = 1;
 %% Loading Metrics Long 
 metrics_torque = zeros(6,16); %metric,generation, run, feedback type 
 directory_name = strcat('orientfb_18_',string(r),'/');
+directory_name = 'torque_tests';
 for t = 0:15
     filename = strcat('performance_metrics_rand_moving_rand_',string(t),'.dat');
     fullname = fullfile(directory_name, filename);

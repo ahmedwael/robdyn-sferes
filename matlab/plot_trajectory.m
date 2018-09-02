@@ -4,8 +4,8 @@ close all;
 clear all;
 program_types=["orientfb", "angled", "angled_pn", "torque"];
 feedback_types = ["18", "36", "180", "none"];
-for p = 1:1
-for f = 1:1
+for p = 4:4
+for f = 2:2
     for r = 0:9 
         directory_name = strcat(program_types(p),'/',program_types(p),'_',feedback_types(f),'/',program_types(p),'_',feedback_types(f),'_',string(r),'/');
         for g = 10000:10000%:10000

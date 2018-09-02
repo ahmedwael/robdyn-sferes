@@ -27,3 +27,4 @@ sferes2/*.mat
 *.m~
 sferes2/*.png
 sferes2/*.fig
+matlab/torque_tests/*
