@@ -23,10 +23,12 @@ def build(bld):
                            uselib = libs,
                            target = 'hexa_supg_hyperneat',
                            json = '',
-                           variants = ['LONG FORCED OLOGS TEXT', \
-                                       # 'LONG FORCED OLOGS TEXT', \
-                                       # 'LONG TORQUE NEGATIVE OLOGS TEXT', \
-                                       'LONG FORCED NEGATIVE OLOGS TEXT'])
+                           variants = ['ORIENTFB TORQUEEXP TEXT', 'OFBV18 ORIENTFB TORQUEEXP TEXT'])
+
+                           # 'LONG FORCED OLOGS TEXT', \
+                           #             # 'LONG FORCED OLOGS TEXT', \
+                           #             # 'LONG TORQUE NEGATIVE OLOGS TEXT', \
+                           #             'LONG FORCED NEGATIVE OLOGS TEXT'])
                                        # 'ORIENTFB LONG TORQUE OLOGS TEXT', \
                                        # 'OFBV18 ORIENTFB LONG TORQUE OLOGS TEXT', \
                                        # 'OFBV18 ORIENTFB LONG TORQUE GRAPHIC', \
