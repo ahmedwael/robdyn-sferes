@@ -57,7 +57,7 @@ if [ -z "$(ls -A ${DIR})" ]; then
  else
     echo "${DIR:0:-1} is Not Empty"
     echo "mv ${DIR:0:-1}/* ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/cppn/"
-    # mkdir ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/cppn/
+    mkdir ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/cppn/
     mv ${DIR:0:-1}/* ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/cppn/
 fi
 rmdir ${DIR:0:-1}

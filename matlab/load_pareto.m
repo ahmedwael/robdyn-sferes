@@ -1,8 +1,8 @@
 performance_all=zeros(101,4,10);
 feedback_types = ["18", "36", "180", "none"];
 program_types=["orientfb", "angled", "angled_pn", "torque"];
-p=4;
-for f = 2:2:4    
+p=2;
+for f = 1:1:3    
     for r = 0:9
         directory_name = strcat(program_types(p),'/',program_types(p),'_',feedback_types(f),'/',program_types(p),'_',feedback_types(f),'_',string(r),'/');
         fullname = fullfile(directory_name, 'pareto.dat');
@@ -18,4 +18,4 @@ for f = 2:2:4
         r
    end
 end
-save("performance_100s_max_torque.mat", "performance_all");
+save(strcat("performance_100s_max_",program_types(p),".mat"), "performance_all");
