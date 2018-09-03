@@ -1,5 +1,5 @@
 program_types=["orientfb", "angled", "angled_pn", "torque"];
-program_types_nice=["Standard", "Modified Fitness (Random)", "Modified Fitness (Both Directions)", "Torque Applied"];
+program_types_nice=["Baseline and Orient. FB", "Modified Fitness (Random)", "Modified Fitness (Both Directions)", "Perturbation Applied"];
 feedback_types = ["18", "36", "180", "baseline"];
 legend_types = ["\pm18\circ", "\pm36\circ", "\pm180\circ", "baseline"];
 close all
@@ -35,26 +35,26 @@ bottom = (papersize(2)- height)/2;
 myfiguresize = [left, bottom, width, height];
 set(gcf,'PaperPosition', myfiguresize);
 hold on
-% f = 1;
-%     p1 = plot(generations, (performance_median(:,f,:)+25)/5,'Color',[0    0.4470    0.7410],'LineWidth',2);
+f = 1;
+    p1 = plot(generations, (performance_median(:,f,:)+25)/5,'Color',[0    0.4470    0.7410],'LineWidth',2);
 %     ciplot((performance_1stqnt(:,f)+25)/5,(performance_3rdqnt(:,f)+25)/5,generations, [0    0.4470    0.7410]);
 f = 2;
     p2 = plot(generations, (performance_median(:,f,:)+25)/5, 'Color',[0.8500    0.3250    0.0980],'LineWidth',2);
-    ciplot((performance_1stqnt(:,f)+25)/5,(performance_3rdqnt(:,f)+25)/5,generations, [0.8500    0.3250    0.0980]);
-% f = 3;
-%     p3 = plot(generations, (performance_median(:,f,:)+25)/5,'Color', [0.9290    0.6940    0.1250],'LineWidth',2);
+%     ciplot((performance_1stqnt(:,f)+25)/5,(performance_3rdqnt(:,f)+25)/5,generations, [0.8500    0.3250    0.0980]);
+f = 3;
+    p3 = plot(generations, (performance_median(:,f,:)+25)/5,'Color', [0.9290    0.6940    0.1250],'LineWidth',2);
 %     ciplot((performance_1stqnt(:,f)+25)/5,(performance_3rdqnt(:,f)+25)/5,generations, [0.9290    0.6940    0.1250]);
 f = 4;
     p4 = plot(generations, (performance_median(:,f,:)+25)/5, 'Color', [0.4940    0.1840    0.5560],'LineWidth',2);
-    ciplot((performance_1stqnt(:,f)+25)/5,(performance_3rdqnt(:,f)+25)/5,generations, [0.4940    0.1840    0.5560]);
+%     ciplot((performance_1stqnt(:,f)+25)/5,(performance_3rdqnt(:,f)+25)/5,generations, [0.4940    0.1840    0.5560]);
 
- 
-% end
-% title("Performance Time-Line: ",);
 title(program_types_nice(p))
 xlabel("Generation");
-ylabel('Y-Direction Velocity (m/s)');
+ylabel("Forward Velocity (m/s)");
 grid on    
 ylim([0 0.8]);
-legend([p2 p4],legend_types(2:2:4));
+legend([p1 p2 p3 p4],legend_types(1:1:4),...
+'FontUnits','points',...
+'FontSize',8,...
+'Location','SouthEast')
 savefig(strcat("Median_Max_Performance_all_Generations_", program_types(p)));    

@@ -23,25 +23,33 @@ def build(bld):
                            uselib = libs,
                            target = 'hexa_supg_hyperneat',
                            json = '',
-                           variants = ['ORIENTFB TORQUEEXP TEXT', 'OFBV18 ORIENTFB TORQUEEXP TEXT'])
+                           variants = ['OFBV18 ORIENTFB TORQUE20 OLOGS TEXT', \
+                                       'OFBV18 ORIENTFB TORQUE19 OLOGS TEXT', \
+                                       'OFBV18 ORIENTFB TORQUE18 OLOGS TEXT', \
+                                       'OFBV18 ORIENTFB TORQUE17 OLOGS TEXT', \
+                                       'OFBV18 ORIENTFB TORQUE16 OLOGS TEXT', \
+                                       'OFBV18 ORIENTFB TORQUE30 OLOGS TEXT', \
+                                       'OFBV18 ORIENTFB TORQUE21 OLOGS TEXT', \
+                                       'OFBV18 ORIENTFB TORQUE22 OLOGS TEXT', \
+                                       'OFBV18 ORIENTFB TORQUE23 OLOGS TEXT', \
+                                       'OFBV18 ORIENTFB TORQUE24 OLOGS TEXT', \
+                                       'OFBV18 ORIENTFB TORQUE25 OLOGS TEXT', \
+                                       'OFBV18 ORIENTFB TORQUE26 OLOGS TEXT', \
+                                       'OFBV18 ORIENTFB TORQUE27 OLOGS TEXT', \
+                                       'OFBV18 ORIENTFB TORQUE28 OLOGS TEXT', \
+                                       'OFBV18 ORIENTFB TORQUE29 OLOGS TEXT'])#,
 
-                           # 'LONG FORCED OLOGS TEXT', \
-                           #             # 'LONG FORCED OLOGS TEXT', \
-                           #             # 'LONG TORQUE NEGATIVE OLOGS TEXT', \
-                           #             'LONG FORCED NEGATIVE OLOGS TEXT'])
-                                       # 'ORIENTFB LONG TORQUE OLOGS TEXT', \
-                                       # 'OFBV18 ORIENTFB LONG TORQUE OLOGS TEXT', \
-                                       # 'OFBV18 ORIENTFB LONG TORQUE GRAPHIC', \
-                                       # 'OFBV36 ORIENTFB LONG TORQUE OLOGS TEXT'])
-                           #             'GRAPHIC', \
-                           #             'ORIENTFB GRAPHIC', \
-                           #             'OFBV18 ORIENTFB GRAPHIC', \
-                           #             'OFBV36 ORIENTFB GRAPHIC'])
-                           # # variants = ['ORIENTFB ANGLED_60 RANDOM ACW TEXT', \
-                           #             'OFBV18 ORIENTFB ANGLED_60 RANDOM ACW TEXT', \
-                           #             'OFBV36 ORIENTFB ANGLED_60 RANDOM ACW TEXT', \
-                           #             'ORIENTFB ANGLED_60 RANDOM CW TEXT' , \
-                           #             'OFBV18 ORIENTFB ANGLED_60 RANDOM CW TEXT', \
-                           #             'OFBV36 ORIENTFB ANGLED_60 RANDOM CW TEXT'])
 
-# LONG BIAS_30 OLOGS TEXT', \
+# LONG TORQUE TORQUE TORQUE TORQUE NEGATIVE
+# variants = ['ANGLED_60 CW ORIENTFB LONG TORQUE NEGATIVE OLOGS TEXT', \
+#             'ANGLED_60 ACW ORIENTFB LONG TORQUE OLOGS TEXT', \
+#             'ANGLED_60 CW OFBV18 ORIENTFB LONG TORQUE OLOGS TEXT', \
+#             'ANGLED_60 ACW OFBV18 ORIENTFB LONG TORQUE OLOGS TEXT', \
+#             'ANGLED_60 CW OFBV36 ORIENTFB LONG TORQUE OLOGS TEXT', \
+#             'ANGLED_60 ACW OFBV36 ORIENTFB LONG TORQUE OLOGS TEXT', \
+#             'ANGLED_60 CW ORIENTFB LONG TORQUE NEGATIVE OLOGS TEXT', \
+#             'ANGLED_60 ACW ORIENTFB LONG TORQUE NEGATIVE OLOGS TEXT', \
+#             'ANGLED_60 CW OFBV18 ORIENTFB LONG TORQUE NEGATIVE OLOGS TEXT', \
+#             'ANGLED_60 ACW OFBV18 ORIENTFB LONG TORQUE NEGATIVE OLOGS TEXT',
+#             'ANGLED_60 CW OFBV36 ORIENTFB LONG TORQUE NEGATIVE OLOGS TEXT', \
+#             'ANGLED_60 ACW OFBV36 ORIENTFB LONG TORQUE NEGATIVE OLOGS TEXT'])#,

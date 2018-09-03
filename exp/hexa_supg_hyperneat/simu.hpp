@@ -52,6 +52,96 @@
   #define ANGLE 0.0
  #endif
 #endif
+#ifdef TORQUE1
+  #define TORQUEAPP 1.0
+#endif
+#ifdef TORQUE2
+  #define TORQUEAPP 2.0
+#endif
+#ifdef TORQUE3
+  #define TORQUEAPP 3.0
+#endif
+#ifdef TORQUE4
+  #define TORQUEAPP 4.0
+#endif
+#ifdef TORQUE5
+  #define TORQUEAPP 5.0
+#endif
+#ifdef TORQUE6
+  #define TORQUEAPP 6.0
+#endif
+#ifdef TORQUE7
+  #define TORQUEAPP 7.0
+#endif
+#ifdef TORQUE8
+  #define TORQUEAPP 8.0
+#endif
+#ifdef TORQUE9
+  #define TORQUEAPP 9.0
+#endif
+#ifdef TORQUE10
+  #define TORQUEAPP 10.0
+#endif
+#ifdef TORQUE11
+  #define TORQUEAPP 11.0
+#endif
+#ifdef TORQUE12
+  #define TORQUEAPP 12.0
+#endif
+#ifdef TORQUE13
+  #define TORQUEAPP 13.0
+#endif
+#ifdef TORQUE14
+  #define TORQUEAPP 14.0
+#endif
+#ifdef TORQUE15
+  #define TORQUEAPP 15.0
+#endif
+#ifdef TORQUE16
+  #define TORQUEAPP 16.0
+#endif
+#ifdef TORQUE17
+  #define TORQUEAPP 17.0
+#endif
+#ifdef TORQUE18
+  #define TORQUEAPP 18.0
+#endif
+#ifdef TORQUE19
+  #define TORQUEAPP 19.0
+#endif
+#ifdef TORQUE20
+  #define TORQUEAPP 20.0
+#endif
+#ifdef TORQUE21
+  #define TORQUEAPP 21.0
+#endif
+#ifdef TORQUE22
+  #define TORQUEAPP 22.0
+#endif
+#ifdef TORQUE23
+  #define TORQUEAPP 23.0
+#endif
+#ifdef TORQUE24
+  #define TORQUEAPP 24.0
+#endif
+#ifdef TORQUE25
+  #define TORQUEAPP 25.0
+#endif
+#ifdef TORQUE26
+  #define TORQUEAPP 26.0
+#endif
+#ifdef TORQUE27
+  #define TORQUEAPP 27.0
+#endif
+#ifdef TORQUE28
+  #define TORQUEAPP 28.0
+#endif
+#ifdef TORQUE29
+  #define TORQUEAPP 29.0
+#endif
+#ifdef TORQUE30
+  #define TORQUEAPP 30.0
+#endif
 template<typename NN> class Simu
 {
 public:
@@ -398,6 +488,9 @@ protected:
         _arrival_angle= atan2( cos(rot[2])* sin(rot[1])* sin(rot[0]) + sin(rot[2])* cos(rot[0]), cos(rot[2])* cos(rot[1]))*180/M_PI;
         double applied_torque = 10.0;
         double torque_time = 10.0;
+    #ifdef TORQUEAPP
+        applied_torque = TORQUEAPP;
+    #endif
     #ifdef NEGATIVE
         applied_torque*=-1.0;
     #endif
@@ -795,6 +888,11 @@ template<typename NN> void Simu<NN> :: moveRobot(robot_t rob, float t, double ap
 #endif
 #ifdef TORQUE
     if (t>=5.0 && t<=5.1){
+      rob->apply_torque(0.0, 0.0, applied_torque);
+    }
+#endif
+#ifdef TORQUEAPP
+    if (t>=4.0 && t<=4.1){
       rob->apply_torque(0.0, 0.0, applied_torque);
     }
 #endif

@@ -1,7 +1,14 @@
 #!/bin/bash
 
-while getopts "p:lfqgsb:ntv:r:" option; do
+while getopts "e:a:p:lfqgsb:ntv:r:" option; do
   case $option in
+    e) E="_torque${OPTARG}";;
+    a) if [ "${OPTARG}" = "0" ]
+        then
+          DIRECTION="_angled_60_cw"
+       else
+          DIRECTION="_angled_60_acw"
+      fi;;
     p) if [ "${OPTARG}" = "o" ]
         then
           FILE="orientfb"
@@ -43,12 +50,12 @@ while getopts "p:lfqgsb:ntv:r:" option; do
     r) RUN=${OPTARG};;
   esac
 done
-OUTPUT=$LONG$FORCED$SHUTOFF$BIAS$TORQUE$NEGATIVE$"_"$VALUE"_"$RUN
+OUTPUT=$DIRECTION$LONG$FORCED$SHUTOFF$BIAS$TORQUE$E$NEGATIVE$"_"$VALUE"_"$RUN
 OUTPUT=${OUTPUT:1}
 echo $OUTPUT
 # $LONG$SHUTOFF$BIAS$FORCED
-echo "./build/default/exp/hexa_supg_hyperneat/hexa_supg_hyperneat${PROGRAM}${LONG}${FORCED}${SHUTOFF}${BIAS}${TORQUE}${NEGATIVE}${GRAPHIC}${TEXT} --load ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/gen_10000 -o ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/$OUTPUT.dat -n 0"
-./build/default/exp/hexa_supg_hyperneat/hexa_supg_hyperneat${PROGRAM}${LONG}${FORCED}${SHUTOFF}${BIAS}${TORQUE}${NEGATIVE}${GRAPHIC}${TEXT} --load ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/gen_10000 -o ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/$OUTPUT.dat -n 0
+echo "./build/default/exp/hexa_supg_hyperneat/hexa_supg_hyperneat${DIRECTION}${PROGRAM}${LONG}${FORCED}${SHUTOFF}${BIAS}${TORQUE}${E}${NEGATIVE}${GRAPHIC}${TEXT} --load ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/gen_10000 -o ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/$OUTPUT.$Edat -n 0"
+./build/default/exp/hexa_supg_hyperneat/hexa_supg_hyperneat${DIRECTION}${PROGRAM}${LONG}${FORCED}${SHUTOFF}${BIAS}${TORQUE}${E}${NEGATIVE}${GRAPHIC}${TEXT} --load ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/gen_10000 -o ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/$OUTPUT.dat -n 0
 DIR=$(ls -t -d *GS60*/ | head -1)
 echo $DIR
 ls -A ${DIR}
@@ -57,7 +64,7 @@ if [ -z "$(ls -A ${DIR})" ]; then
  else
     echo "${DIR:0:-1} is Not Empty"
     echo "mv ${DIR:0:-1}/* ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/cppn/"
-    mkdir ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/cppn/
+    # mkdir ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/cppn/
     mv ${DIR:0:-1}/* ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/cppn/
 fi
 rmdir ${DIR:0:-1}
