@@ -1,10 +1,13 @@
 program_types=["orientfb", "angled", "angled_pn", "torque"];
-program_types_nice=["Baseline and Orient. FB", "Modified Fitness (Random)", "Modified Fitness (Both Directions)", "Perturbation Applied"];
+% program_types_nice=["Baseline and Orient. FB", "\pm60\circ Goal (Random)", "\pm60\circ Goal (Both Directions)", "Perturbation Applied"];
+program_types_nice=["OFB and BL", "MD-RAND", "MD-BOTH", "PERT"];
 feedback_types = ["18", "36", "180", "baseline"];
-legend_types = ["\pm18\circ", "\pm36\circ", "\pm180\circ", "baseline"];
+legend_types = ["\pm18\circ", "\pm36\circ", "\pm180\circ", "NF"];
+file_names = ["orientfb","angled","angled_pn","torque"];
 close all
 generations = linspace(0,10000,101);
-p = 4;
+for p = 1:4
+% p = 4;
 load(strcat("performance_100s_max_",program_types(p),".mat"));
 % r = 5
 %r = 3
@@ -16,11 +19,11 @@ performance_median = nanmedian(performance_all, 3);
 performance_1stqnt = quantile(performance_all,0.4,3);
 performance_3rdqnt = quantile(performance_all,0.6,3);
 performance_iqr= iqr(performance_all,3);
-(performance_median(101,:)+25)
-performance_iqr(101,:)
+% (performance_median(81,:)+25)/5
+performance_iqr(81,:)/5
 % performance_std = std(performance_all,0, 3);
 % performance_std = 0.3*performance_std;
-figure(1)
+figure(p)
 set(gca,...
 'Units','normalized',...
 'FontWeight','normal',...
@@ -53,8 +56,22 @@ xlabel("Generation");
 ylabel("Forward Velocity (m/s)");
 grid on    
 ylim([0 0.8]);
+if  p < 4
+location = 'NorthWest';
+else
+location = 'SouthEast';
+end
+if (p == 2 || p== 3)
+legend([p1 p2 p3],legend_types(1:1:3),...
+'FontUnits','points',...
+'FontSize',8,...
+'Location',location);
+else
 legend([p1 p2 p3 p4],legend_types(1:1:4),...
 'FontUnits','points',...
 'FontSize',8,...
-'Location','SouthEast')
-savefig(strcat("Median_Max_Performance_all_Generations_", program_types(p)));    
+'Location',location);
+end
+% savefig(strcat("Median_Max_Performance_all_Generations_", program_types(p)));
+print(strcat('convergence_',file_names(p)),'-depsc2','-r300');
+end

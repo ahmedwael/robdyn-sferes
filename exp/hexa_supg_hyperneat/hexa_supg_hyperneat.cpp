@@ -386,6 +386,9 @@ SFERES_FITNESS(FitSpace, sferes::fit::Fitness)
 #else
  #ifdef LONG
        Simu <typename Indiv::gen_t> simu(indiv.gen(), global::robot, global::brokenLegs, 15.0, global::env->angle);
+       #ifdef PN
+             Simu <typename Indiv::gen_t> simu_b(indiv.gen(), global::robot, global::brokenLegs, 15.0, global::env->angle, -1);
+       #endif
  #else
        Simu <typename Indiv::gen_t> simu(indiv.gen(), global::robot, global::brokenLegs, 5.0, global::env->angle);
  #ifdef PN

@@ -1,13 +1,8 @@
 #!/bin/bash
 
-while getopts "a:p:lfqgsb:ntv:" option; do
+while getopts "ap:lfqgsb:ntv:" option; do
   case $option in
-    a) if [ "${OPTARG}" = "0" ]
-        then
-          A=" -a 0"
-       else
-          A=" -a 1"
-      fi;;
+    a) A=" -a";;
     p) if [ "${OPTARG}" = "o" ]
         then
           P=" -p o"
@@ -46,11 +41,12 @@ while getopts "a:p:lfqgsb:ntv:" option; do
   esac
 done
 
-i="16"
-R=" -r 1"
-while [ $i -lt 31 ]
+i="0"
+# R=" -r 1"
+while [ $i -lt 10 ]
 do
-E=" -e $i"
+# E=" -e $i"
+R=" -r $i"
 echo "./run_exp.sh$E$A$P$L$F$G$S$B$T$N$V$R"
 ./run_exp.sh$E$A$P$L$F$Q$G$S$B$N$T$V$R
 i=$[$i+1]

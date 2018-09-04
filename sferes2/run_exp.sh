@@ -1,14 +1,9 @@
 #!/bin/bash
 
-while getopts "e:a:p:lfqgsb:ntv:r:" option; do
+while getopts "e:ap:lfqgsb:ntv:r:" option; do
   case $option in
     e) E="_torque${OPTARG}";;
-    a) if [ "${OPTARG}" = "0" ]
-        then
-          DIRECTION="_angled_60_cw"
-       else
-          DIRECTION="_angled_60_acw"
-      fi;;
+    a) DIRECTION="_angled_60_pn";;
     p) if [ "${OPTARG}" = "o" ]
         then
           FILE="orientfb"
@@ -75,6 +70,6 @@ mv performance_metrics.dat ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/perfor
 mv contact_simu_1.txt ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/contact_simu_1_${OUTPUT}.txt
 mv orientation_simu_1.txt ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/orientation_simu_1_${OUTPUT}.txt
 
-# mv traj_simu_-1.txt ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/traj_simu_-1_${OUTPUT}.txt
-# mv contact_simu_-1.txt ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/contact_simu_-1_${OUTPUT}.txt
-# mv orientation_simu_-1.txt ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/orientation_simu_-1_${OUTPUT}.txt
+mv traj_simu_-1.txt ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/traj_simu_-1_${OUTPUT}.txt
+mv contact_simu_-1.txt ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/contact_simu_-1_${OUTPUT}.txt
+mv orientation_simu_-1.txt ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/orientation_simu_-1_${OUTPUT}.txt
