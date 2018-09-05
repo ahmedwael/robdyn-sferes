@@ -5,7 +5,7 @@ file_names = ["orientfb","angled","angled_pn","torque"];
 % feedback_types = ["18°", "36°", "180°", "Baseline"];
 legend_types = ["18°", "36°", "180°", "NF"];
 % program_types_nice=["Baseline and Orient. FB", "\pm60\circ Goal (Random)", "\pm60\circ Goal (Both Directions)", "Perturbation Applied"];
-program_types_nice=["OFB and BL", "MD-RAND", "MD-BOTH", "PERT"];
+program_types_nice=["OFB and BL", "MD-R", "MD-B", "PERT"];
 final_performance_short_all=zeros(10,16);
 for p = 1:4
 
@@ -60,11 +60,28 @@ end
 % [x,tbl,stats] = kruskalwallis(final_performance_short_all(:,[1,2,3,4,5,6,7,9,10,11,14,16]),[],'off')
 % [x,tbl,stats] = kruskalwallis(final_performance_short_all(:,2:4:16),[],'off')
 ofb = vertcat(final_performance_short_all(:,1),final_performance_short_all(:,2),final_performance_short_all(:,3));
+bl_ofb= vertcat(ofb,final_performance_short_all(:,4));
+straight = vertcat(bl_ofb,final_performance_short_all(:,14),final_performance_short_all(:,16)); 
+modified = vertcat(final_performance_short_all(:,5),final_performance_short_all(:,6),final_performance_short_all(:,7),final_performance_short_all(:,9),final_performance_short_all(:,9),final_performance_short_all(:,11));
+median(straight);
+median(modified);
+median(modified(1:30))
+iqr(straight);
+iqr(modified(1:30))
+median(modified(31:60))
+iqr(modified(31:60))
 % [x,h,stats] = ranksum(ofb,final_performance_short_all(:,4),'alpha',0.05,...
 %     'tail','right','method','approximate')
 % [x,h,stats] = ranksum(final_performance_short_all(:,14),final_performance_short_all(:,16),'alpha',0.05,...
 % 'tail','left','method','approximate')
+%  [x,h,stats] = ranksum(modified,straight,'alpha',0.05,...
+%  'tail','left','method','approximate')
+[x,h,stats] = ranksum(modified(31:60),modified(1:30),'alpha',0.05,...
+ 'tail','left','method','approximate')
 % x = kruskalwallis(final_performance_short_all(:,[8,12,13,15]))
+%%
+figure(99)
+
 %% Plotting Performance
 
 final_performance_short = reshape((metrics_short(1,10,:,:)+25)/5,[10 4]);

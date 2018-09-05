@@ -6,7 +6,7 @@ program_types=["orientfb", "angled", "angled_pn", "torque"];
 feedback_types = ["18", "36", "180"];
 for p = 1:1
 for f = 2:2
-    for r = 0:9 
+    for r = 7:7 
         directory_name = strcat(program_types(p),'/',program_types(p),'_',feedback_types(f),'/',program_types(p),'_',feedback_types(f),'_',string(r),'/');
         for g = 10000:10000%:10000
             filename = strcat('traj_simu_1_long_', feedback_types(f),'_', string(r),'.txt');
@@ -65,12 +65,12 @@ for f = 2:2
             ylim([-0.5 10])
             xlabel('X (meters)')
             ylabel('Y (meters)')
-            title(strcat("Trajectories of Hexapod ", string(r)," Feedback ", feedback_types(f)));%, " Run ", string(r)));
+%             title(strcat("Trajectories of Hexapod ", string(r)," Feedback ", feedback_types(f)));%, " Run ", string(r)));
             set(gca,...
             'Units','normalized',...
             'FontWeight','normal',...
             'FontSize',10.5);
-            width = 3.25;     % Width in inches
+            width = 4.5;     % Width in inches
             height = 2.5;    % Height in inches
             set(gcf,'InvertHardcopy','on');
             set(gcf,'PaperUnits', 'inches');
@@ -80,19 +80,20 @@ for f = 2:2
             myfiguresize = [left, bottom, width, height];
             set(gcf,'PaperPosition', myfiguresize);
             if (p==2 || p==3)
-            legend_types = ["standard", "shutoff","bias 30° ACW", "bias 30° CW", "+-30° Indicator", "+-60°"];
-            legend([p1 p6 p7 p8 p9 p11],legend_types(:),...
-            'FontUnits','points',...
-            'FontSize',8,...
-            'Location','NorthWest');
-            else
-            legend_types = ["standard", "shutoff","bias 30° ACW", "bias 30° CW", "+-30° Indicator"];
+            legend_types = ["standard", "shutoff","bias 30° ACW", "bias 30° CW"];%, "+-30° Indicator", "+-60°"];
             legend([p1 p6 p7 p8 p9],legend_types(:),...
             'FontUnits','points',...
             'FontSize',8,...
-            'Location','NorthWest');
+            'Location','SouthWest');
+            else
+            legend_types = ["standard", "shutoff","bias +30°", "bias -30°"];%, "+-30° Indicator"];
+            legend([p1 p6 p7 p8 p9],legend_types(:),...
+            'FontUnits','points',...
+            'FontSize',7,...
+            'Location','bestoutside');
             end
-            daspect([1 1 1])            
+            daspect([1 1 1])
+%             print('cs_good_sig','-depsc2','-r300');
         end
     end
 end

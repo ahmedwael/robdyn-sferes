@@ -4,7 +4,7 @@ close all;
 clear all;
 metrics_long = zeros(6,10,10,3); %metric,generation, run, feedback type
 program_types=["orientfb", "angled", "angled_pn", "torque"];
-p=3;
+p=1;
 normalized_distance_shutoff = zeros(3,10);
 normalized_distance_bias30_acw = zeros(3,10);
 normalized_distance_bias30_cw = zeros(3,10);
@@ -34,9 +34,7 @@ for f = 1:3
 %         test = size(data,1);
         trajdatalongshutoff(1:size(data,1),:) = data;        
         trajdatalongshutoff(size(data,1):end,:) = repmat(data(end,:),1001-size(data,1),1);        
-%         filename = strcat('traj_simu_1_long_forced_', feedback_types(f),'_', string(r),'.txt');
-%         fullname = fullfile(directory_name, filename);
-%         trajdatalongforced = load(fullname);
+
 
         filename = strcat('traj_simu_1_long_bias_30_', feedback_types(f),'_', string(r),'.txt');
         fullname = fullfile(directory_name, filename);

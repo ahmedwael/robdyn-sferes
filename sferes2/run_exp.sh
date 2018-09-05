@@ -59,7 +59,7 @@ if [ -z "$(ls -A ${DIR})" ]; then
  else
     echo "${DIR:0:-1} is Not Empty"
     echo "mv ${DIR:0:-1}/* ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/cppn/"
-    # mkdir ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/cppn/
+    mkdir ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/cppn/
     mv ${DIR:0:-1}/* ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/cppn/
 fi
 rmdir ${DIR:0:-1}
@@ -70,6 +70,6 @@ mv performance_metrics.dat ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/perfor
 mv contact_simu_1.txt ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/contact_simu_1_${OUTPUT}.txt
 mv orientation_simu_1.txt ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/orientation_simu_1_${OUTPUT}.txt
 
-mv traj_simu_-1.txt ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/traj_simu_-1_${OUTPUT}.txt
-mv contact_simu_-1.txt ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/contact_simu_-1_${OUTPUT}.txt
-mv orientation_simu_-1.txt ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/orientation_simu_-1_${OUTPUT}.txt
+# mv traj_simu_-1.txt ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/traj_simu_-1_${OUTPUT}.txt
+# mv contact_simu_-1.txt ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/contact_simu_-1_${OUTPUT}.txt
+# mv orientation_simu_-1.txt ${FILE}/${FILE}_${VALUE}/${FILE}_${VALUE}_$RUN/orientation_simu_-1_${OUTPUT}.txt

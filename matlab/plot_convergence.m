@@ -6,7 +6,7 @@ legend_types = ["\pm18\circ", "\pm36\circ", "\pm180\circ", "NF"];
 file_names = ["orientfb","angled","angled_pn","torque"];
 close all
 generations = linspace(0,10000,101);
-for p = 1:4
+for p = 4:4
 % p = 4;
 load(strcat("performance_100s_max_",program_types(p),".mat"));
 % r = 5
