@@ -1,6 +1,6 @@
 program_types=["orientfb", "angled", "angled_pn", "torque"];
 % program_types_nice=["Baseline and Orient. FB", "\pm60\circ Goal (Random)", "\pm60\circ Goal (Both Directions)", "Perturbation Applied"];
-program_types_nice=["OFB and BL", "MD-RAND", "MD-BOTH", "PERT"];
+program_types_nice=["OFB and BL", "MD-R", "MD-B", "PERT"];
 feedback_types = ["18", "36", "180", "baseline"];
 legend_types = ["\pm18\circ", "\pm36\circ", "\pm180\circ", "NF"];
 file_names = ["orientfb","angled","angled_pn","torque"];
@@ -20,7 +20,7 @@ performance_1stqnt = quantile(performance_all,0.4,3);
 performance_3rdqnt = quantile(performance_all,0.6,3);
 performance_iqr= iqr(performance_all,3);
 % (performance_median(81,:)+25)/5
-performance_iqr(81,:)/5
+performance_iqr(81,:);
 % performance_std = std(performance_all,0, 3);
 % performance_std = 0.3*performance_std;
 figure(p)
