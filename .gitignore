@@ -2,7 +2,6 @@ robdyn/*.pyc
 sferes2/*.pyc
 install/
 sferes2/build
-sferes2/orientfb*
 sferes2/virtual*
 sferes2/GS60*
 sferes2/.waf*
@@ -13,8 +12,6 @@ sferes2/traj_simu*
 sferes2/test_ofb*
 sferes2/run_exp.sh
 sferes2/run_multiple.sh
-sferes2/angled*
-sferes2/torque*
 sferes2/*.sh
 sferes2*.mat
 robdyn/.waf*
